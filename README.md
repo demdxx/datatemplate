@@ -1,5 +1,10 @@
 # DataTemplate Module
 
+[![Build Status](https://github.com/demdxx/datatemplate/workflows/Tests/badge.svg)](https://github.com/demdxx/datatemplate/actions?workflow=Tests)
+[![Go Report Card](https://goreportcard.com/badge/github.com/demdxx/datatemplate)](https://goreportcard.com/report/github.com/demdxx/datatemplate)
+[![GoDoc](https://godoc.org/github.com/demdxx/datatemplate?status.svg)](https://godoc.org/github.com/demdxx/datatemplate)
+[![Coverage Status](https://coveralls.io/repos/github/demdxx/datatemplate/badge.svg)](https://coveralls.io/github/demdxx/datatemplate)
+
 The Go Templating Module is a versatile and powerful tool for dynamically generating text and data by processing templates with dynamic content. This module allows you to seamlessly substitute placeholders within templates with real data, making it an ideal choice for creating dynamic reports, generating emails, rendering dynamic content, and even generating dynamic configuration files in JSON or YAML formats for your Go applications.
 
 ## Features
