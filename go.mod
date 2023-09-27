@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/antonmedv/expr v1.15.3
 	github.com/demdxx/gocast/v2 v2.6.2
-	github.com/demdxx/xtypes v0.0.0-20230925162145-709eb5289082
+	github.com/demdxx/xtypes v0.0.0-20230927123924-f761d8c0b100
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.4
 )

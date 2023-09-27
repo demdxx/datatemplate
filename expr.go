@@ -5,7 +5,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/antonmedv/expr"
 	"github.com/demdxx/gocast/v2"
 )
 
@@ -28,8 +27,12 @@ func NewExprBlockFromExpr(ctx context.Context, expression string, asStr bool) (*
 	return NewExprBlock(program, asStr), nil
 }
 
+func (b *ExprBlock) String() string {
+	return "`" + b.expr.Source.Content() + "`"
+}
+
 func (b *ExprBlock) Emit(ctx context.Context, data map[string]any) (any, error) {
-	res, err := expr.Run(b.expr, data)
+	res, err := runExpr(ctx, b.expr, data)
 	if err == nil && b.asStr {
 		res = gocast.Str(res)
 	}
@@ -63,10 +66,14 @@ func NewExprBlockFromString(ctx context.Context, data string) (any, error) {
 	return &ExprBlockStringTmplate{expression: data, exprs: exprs}, nil
 }
 
+func (b *ExprBlockStringTmplate) String() string {
+	return b.expression
+}
+
 func (b *ExprBlockStringTmplate) Emit(ctx context.Context, data map[string]any) (any, error) {
 	result := b.expression
 	for k, v := range b.exprs {
-		res, err := expr.Run(v, data)
+		res, err := runExpr(ctx, v, data)
 		if err != nil {
 			return nil, err
 		}

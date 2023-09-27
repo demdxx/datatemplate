@@ -4,9 +4,11 @@ package datatemplate
 
 import (
 	"context"
+	"fmt"
 )
 
 type Block interface {
+	fmt.Stringer
 	Emit(ctx context.Context, data map[string]any) (any, error)
 }
 
@@ -30,6 +32,10 @@ func NewTemplateFor(data any, opts ...Option) (*Template, error) {
 		return nil, err
 	}
 	return NewTemplate(NewDataBlock(root)), nil
+}
+
+func (tpl *Template) String() string {
+	return tpl.root.String()
 }
 
 // Process template with data and return result according to template of data

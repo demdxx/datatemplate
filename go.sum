@@ -4,8 +4,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/demdxx/gocast/v2 v2.6.2 h1:/VOyuTnikRV3jD+Z7pevPgWrX0IywgRHrAbEpF4DnGs=
 github.com/demdxx/gocast/v2 v2.6.2/go.mod h1:a0zkKFJleiG+9KPN1SDNEoOVi530inpsPolLcpegz04=
-github.com/demdxx/xtypes v0.0.0-20230925162145-709eb5289082 h1:7gu2DzHK/5f7fEjYxG+Sl9572uxb5Rm0AL7rkLbjDsU=
-github.com/demdxx/xtypes v0.0.0-20230925162145-709eb5289082/go.mod h1:z7AwIX7FpM9vW9oSzEbEjTxf9+52XqVUMYFaXEhe8O0=
+github.com/demdxx/xtypes v0.0.0-20230927123924-f761d8c0b100 h1:tLeiqOJG7bJW1JCRdmXEyUggllnFWTvQxPGPXxIKxWI=
+github.com/demdxx/xtypes v0.0.0-20230927123924-f761d8c0b100/go.mod h1:z7AwIX7FpM9vW9oSzEbEjTxf9+52XqVUMYFaXEhe8O0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

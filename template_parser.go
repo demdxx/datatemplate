@@ -2,6 +2,8 @@ package datatemplate
 
 import (
 	"context"
+	"regexp"
+	"strings"
 
 	"github.com/demdxx/gocast/v2"
 	"github.com/demdxx/xtypes"
@@ -11,6 +13,8 @@ import (
 var (
 	errInvalidIfBlock                        = errors.New("invalid if block")
 	errInvalidIteratorBlock                  = errors.New("invalid iterator block")
+	errInvalidWithBlock                      = errors.New("invalid with block")
+	errInvalidWithBlockExpr                  = errors.New("invalid with block expr")
 	errDataFieldsIsNotAllowedIfBodyIsDefined = errors.New("data fields is not allowed if body is defined")
 )
 
@@ -41,6 +45,9 @@ func parseBlocks(ctx context.Context, data any) (any, error) {
 		}
 		if _, ok := m["$iterate"]; ok {
 			return parseIteratorBlock(ctx, m)
+		}
+		if _, ok := m["$with"]; ok {
+			return parseWithBlock(ctx, m)
 		}
 
 		blocks := make(map[string]any, len(m))
@@ -189,4 +196,85 @@ func parseIteratorBlock(ctx context.Context, data map[string]any) (Block, error)
 	}
 
 	return NewIterateBlockFromExpr(ctx, iterateExpr, "", "", "", NewDataBlock(body))
+}
+
+// Extract variable name from expression like: varName := expr
+var reLeftVariableName = regexp.MustCompile(`^\s*([a-zA-Z0-9_]+)\s*:=\s*`)
+
+// Example 1:
+// $with: varName := np.name
+// $body:
+//
+//	field1: "{{var}}"
+//	field2: "{{np.age}}"
+//
+// Example 2:
+// $with:
+//
+//	$expr: varName := np.name
+//	$body:
+//		field1: "{{var}}"
+//		field2: "{{np.age}}"
+//
+// Example 3:
+// $with:
+//
+//	$expr: varName := np.name
+//	field1: "{{var}}"
+//	field2: "{{np.age}}"
+//
+// Example 4:
+// $with: varName := np.name
+// field1: "{{var}}"
+// field2: "{{np.age}}"
+func parseWithBlock(ctx context.Context, data map[string]any) (Block, error) {
+	var (
+		withData, ok = data["$with"]
+		withExpr     string
+		bodyData     any
+	)
+	if !ok {
+		return nil, errInvalidWithBlock
+	}
+
+	if gocast.IsStr(withData) {
+		withExpr = gocast.Str(withData)
+
+		// If body is defined then we should not have any other fields
+		if bodyData, ok = data["$body"]; ok {
+			if len(data) > 2 {
+				return nil, errDataFieldsIsNotAllowedIfBodyIsDefined
+			}
+		} else {
+			// Remove $with field if present
+			bodyData = xtypes.Map[string, any](data).Filter(func(k string, _ any) bool { return k != "$with" })
+		}
+	} else {
+		dataCopy := xtypes.Map[string, any](gocast.Map[string, any](withData)).Copy()
+		withExpr = gocast.Str(dataCopy["$expr"])
+
+		// If body is defined then we should not have any other fields
+		if bodyData, ok = dataCopy["$body"]; ok {
+			if len(dataCopy) > 2 {
+				return nil, errDataFieldsIsNotAllowedIfBodyIsDefined
+			}
+		} else {
+			delete(dataCopy, "$expr")
+			bodyData = dataCopy
+		}
+	}
+
+	varArr := reLeftVariableName.FindStringSubmatch(withExpr)
+	if len(varArr) < 2 {
+		return nil, errInvalidWithBlockExpr
+	}
+	withExpr = strings.TrimSpace(strings.Replace(withExpr, varArr[0], "", 1))
+
+	// Parse blocks from data
+	body, err := parseBlocks(ctx, bodyData)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewWithBlockFromExpr(ctx, varArr[1], withExpr, NewDataBlock(body))
 }

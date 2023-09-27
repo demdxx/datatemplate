@@ -4,7 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/antonmedv/expr"
 	"github.com/demdxx/gocast/v2"
 )
 
@@ -33,8 +32,15 @@ func NewIfBlockWithContition(ctx context.Context, cond string, thenBlock, elseBl
 	return NewIfBlock(_cond, thenBlock, elseBlock), nil
 }
 
+func (b *IfBlock) String() string {
+	if b.elseBlock == nil {
+		return "$if: {`$expr`: `" + b.cond.Source.Content() + "`, $then: " + b.thenBlock.String() + "}"
+	}
+	return "$if: {`$expr`: `" + b.cond.Source.Content() + "`, $then: " + b.thenBlock.String() + ", $else: " + b.elseBlock.String() + "}"
+}
+
 func (b *IfBlock) Emit(ctx context.Context, data map[string]any) (any, error) {
-	res, err := expr.Run(b.cond, data)
+	res, err := runExpr(ctx, b.cond, data)
 	if err != nil {
 		return nil, err
 	}

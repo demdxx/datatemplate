@@ -3,7 +3,6 @@ package datatemplate
 import (
 	"context"
 
-	"github.com/antonmedv/expr"
 	"github.com/demdxx/gocast/v2"
 	"github.com/demdxx/xtypes"
 	"github.com/pkg/errors"
@@ -37,8 +36,16 @@ func NewIterateBlockFromExpr(ctx context.Context, expression, indexName, keyName
 	return NewIterateBlock(program, indexName, keyName, valueName, block), nil
 }
 
+func (it *IterateBlock) String() string {
+	return "$iterate: {`$expr`: `" + it.expr.Source.Content() +
+		"`, $index: `" + it.indexName +
+		"`, $key: `" + it.keyName +
+		"`, $value: `" + it.valueName +
+		"`, $body: " + it.block.String() + "}"
+}
+
 func (it *IterateBlock) Emit(ctx context.Context, data map[string]any) (any, error) {
-	otData, err := expr.Run(it.expr, data)
+	otData, err := runExpr(ctx, it.expr, data)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +65,7 @@ func (it *IterateBlock) Emit(ctx context.Context, data map[string]any) (any, err
 			nData[it.valueName] = item
 			if rData, err := it.block.Emit(ctx, nData); err != nil {
 				return nil, err
-			} else {
+			} else if rData != nil {
 				res = append(res, rData)
 			}
 		}

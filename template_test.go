@@ -3,6 +3,7 @@ package datatemplate
 import (
 	"context"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/demdxx/gocast/v2"
@@ -217,6 +218,39 @@ func TestTemplate(t *testing.T) {
 					},
 				},
 			},
+			// With statement tests
+			{
+				tpl: map[string]any{
+					"person": map[string]any{
+						"$with": map[string]any{
+							"$expr": "np := person[0]",
+							"name":  "{{np.name}}",
+							"age":   "{{np.age}}",
+						},
+					},
+				},
+				res: map[string]any{
+					"person": map[string]any{
+						"name": "tony",
+						"age":  42,
+					},
+				},
+			},
+			{
+				tpl: map[string]any{
+					"person": map[string]any{
+						"$with": "np := person[0]",
+						"name":  "{{np.name}}",
+						"age":   "{{np.age}}",
+					},
+				},
+				res: map[string]any{
+					"person": map[string]any{
+						"name": "tony",
+						"age":  42,
+					},
+				},
+			},
 		}
 		for i, test := range tests {
 			t.Run(gocast.Str(i), func(t *testing.T) {
@@ -233,4 +267,48 @@ func TestTemplate(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestTemplateStr(t *testing.T) {
+	data := map[string]any{
+		"person": []map[string]any{
+			{
+				"name": "tony",
+				"age":  42,
+			},
+			{
+				"name": "rony",
+				"age":  14,
+			},
+		},
+	}
+
+	tmp, err := NewTemplateFor(map[string]any{
+		"persons": map[string]any{
+			"$iterate": "person",
+			"$body": map[string]any{
+				"$if":   "index == 0",
+				"$with": "np := item",
+				"name":  "{{np.name}}",
+				"age":   "{{np.age}}",
+				"index": "{{s= index+1}}",
+			},
+		},
+	})
+
+	if assert.NoError(t, err) {
+		ndata, err := tmp.Process(context.Background(), data)
+		assert.NoError(t, err)
+		assert.True(t, reflect.DeepEqual(map[string]any{
+			"persons": []any{
+				map[string]any{
+					"name":  "tony",
+					"age":   42,
+					"index": "1",
+				},
+			},
+		}, ndata))
+
+		assert.True(t, strings.HasPrefix(tmp.String(), `{persons: $iterate: {`))
+	}
 }

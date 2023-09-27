@@ -25,3 +25,7 @@ type Program = vm.Program
 func compileExpr(ctx context.Context, expression string) (*Program, error) {
 	return expr.Compile(expression, ctxExprOptions(ctx)...)
 }
+
+func runExpr(ctx context.Context, program *Program, data map[string]any) (any, error) {
+	return expr.Run(program, data)
+}
