@@ -31,7 +31,7 @@ func NewIterateBlock(expr *Program, indexName, keyName, valueName string, block 
 func NewIterateBlockFromExpr(ctx context.Context, expression, indexName, keyName, valueName string, block Block) (*IterateBlock, error) {
 	program, err := compileExpr(ctx, expression)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, expression)
 	}
 	return NewIterateBlock(program, indexName, keyName, valueName, block), nil
 }

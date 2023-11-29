@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/demdxx/gocast/v2"
+	"github.com/pkg/errors"
 )
 
 type IfBlock struct {
@@ -27,7 +28,7 @@ func NewIfBlockWithContition(ctx context.Context, cond string, thenBlock, elseBl
 	}
 	_cond, err := compileExpr(ctx, cond)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, cond)
 	}
 	return NewIfBlock(_cond, thenBlock, elseBlock), nil
 }

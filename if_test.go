@@ -13,6 +13,7 @@ func TestIfBlock(t *testing.T) {
 	t.Run("if", func(t *testing.T) {
 		_if, err := NewIfBlockWithContition(ctx, "person.name == 'tony'", NewDataBlock("true"), NewDataBlock("false"))
 		assert.NoError(t, err)
+		assert.Equal(t, "$if: {`$expr`: `person.name == 'tony'`, $then: true, $else: false}", _if.String())
 
 		res, err := _if.Emit(context.TODO(), map[string]any{"person": map[string]any{"name": "tony"}})
 		assert.NoError(t, err)

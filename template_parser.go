@@ -266,7 +266,7 @@ func parseWithBlock(ctx context.Context, data map[string]any) (Block, error) {
 
 	varArr := reLeftVariableName.FindStringSubmatch(withExpr)
 	if len(varArr) < 2 {
-		return nil, errInvalidWithBlockExpr
+		return nil, errors.Wrap(errInvalidWithBlockExpr, withExpr)
 	}
 	withExpr = strings.TrimSpace(strings.Replace(withExpr, varArr[0], "", 1))
 
